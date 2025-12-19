@@ -1,0 +1,63 @@
+plugins {
+    id 'java'
+}
+
+group = 'net.zamasoft'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+    options.links("https://docs.oracle.com/javase/8/docs/api/")
+}
+
+jar {
+    manifest {
+        attributes(
+            'Implementation-Title': 'Index Util',
+            'Implementation-Version': version
+        )
+    }
+}
+
+task publishToPublic(type: Copy) {
+    dependsOn jar, javadoc
+    
+    // JARファイルをコピー
+    from(jar.archiveFile) {
+        into 'libs'
+    }
+    
+    // Javadocをコピー
+    from(javadoc.destinationDir) {
+        into 'javadoc'
+    }
+    
+    into 'public'
+}
+
+// jar と javadoc タスクが完了した後に自動的に実行されるように設定
+jar.finalizedBy publishToPublic
+javadoc.finalizedBy publishToPublic
