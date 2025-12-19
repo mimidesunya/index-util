@@ -29,7 +29,7 @@ public final class StringUtils {
 	private static final int DIFFERENCE = 'Ａ' - 'A';
 
 	/** 変換対象となる全角記号の配列 */
-	private static final char[] SIGNS2 = {
+	private static final char[] FULL_WIDTH_SIGNS = {
 			'！', '＃', '＄', '％', '＆', '（', '）', '＊', '＋', '，', '−', '－', '．', '／', '：', '；',
 			'＜', '＝', '＞', '？', '＠', '［', '］', '＾', '＿', '｛', '｜', '｝'
 	};
@@ -37,12 +37,12 @@ public final class StringUtils {
 	/**
 	 * 指定された文字が変換対象の全角記号かどうかを判定します。
 	 *
-	 * @param pc 判定対象の文字
+	 * @param ch 判定対象の文字
 	 * @return 変換対象であれば true
 	 */
-	private static boolean is2Sign(final char pc) {
-		for (final char c : SIGNS2) {
-			if (c == pc) {
+	private static boolean isFullWidthSign(final char ch) {
+		for (final char sign : FULL_WIDTH_SIGNS) {
+			if (sign == ch) {
 				return true;
 			}
 		}
@@ -55,15 +55,15 @@ public final class StringUtils {
 	 * @param str 変換対象の文字列
 	 * @return 変換後の文字列
 	 */
-	public static String convert(final String str) {
+	public static String toHalfWidth(final String str) {
 		if (str == null) {
 			return null;
 		}
-		final char[] cc = str.toCharArray();
-		final StringBuilder sb = new StringBuilder(cc.length);
-		for (final char c : cc) {
+		final char[] chars = str.toCharArray();
+		final StringBuilder sb = new StringBuilder(chars.length);
+		for (final char c : chars) {
 			char newChar = c;
-			if ((('Ａ' <= c) && (c <= 'Ｚ')) || (('ａ' <= c) && (c <= 'ｚ')) || (('０' <= c) && (c <= '９')) || is2Sign(c)) {
+			if ((('Ａ' <= c) && (c <= 'Ｚ')) || (('ａ' <= c) && (c <= 'ｚ')) || (('０' <= c) && (c <= '９')) || isFullWidthSign(c)) {
 				newChar = (char) (c - DIFFERENCE);
 			}
 			sb.append(newChar);
@@ -94,16 +94,16 @@ public final class StringUtils {
 		if (str == null || str.isEmpty()) {
 			return str;
 		}
-		int st = 0;
-		int len = str.length();
-		final char[] val = str.toCharArray();
-		while ((st < len) && (val[st] <= '\u0020' || val[st] == '\u00A0' || val[st] == '\u3000')) {
-			st++;
+		int start = 0;
+		int end = str.length();
+		final char[] chars = str.toCharArray();
+		while ((start < end) && (chars[start] <= '\u0020' || chars[start] == '\u00A0' || chars[start] == '\u3000')) {
+			start++;
 		}
-		while ((st < len) && (val[len - 1] <= '\u0020' || val[len - 1] == '\u00A0' || val[len - 1] == '\u3000')) {
-			len--;
+		while ((start < end) && (chars[end - 1] <= '\u0020' || chars[end - 1] == '\u00A0' || chars[end - 1] == '\u3000')) {
+			end--;
 		}
-		return ((st > 0) || (len < str.length())) ? str.substring(st, len) : str;
+		return ((start > 0) || (end < str.length())) ? str.substring(start, end) : str;
 	}
 
 	/** 異体字などの変換マップ */
@@ -139,23 +139,23 @@ public final class StringUtils {
 	 * @param str 正規化対象の文字列
 	 * @return 正規化後の文字列
 	 */
-	public static String normalizeName(final String str) {
+	public static String normalize(final String str) {
 		if (str == null) {
 			return null;
 		}
-		final char[] c = str.toCharArray();
-		for (int i = 0; i < c.length; ++i) {
-			char ch = c[i];
+		final char[] chars = str.toCharArray();
+		for (int i = 0; i < chars.length; ++i) {
+			char ch = chars[i];
 			if (ch >= 'ぁ' && ch <= 'ん') {
 				ch = (char) (ch - 'ぁ' + 'ァ');
 			}
-			final Character d = VAR_MAP.get(ch);
-			if (d != null) {
-				ch = d;
+			final Character variant = VAR_MAP.get(ch);
+			if (variant != null) {
+				ch = variant;
 			}
-			c[i] = ch;
+			chars[i] = ch;
 		}
-		return hankakuKatakanaToZenkakuKatakana(new String(c).replaceAll("[\\s\u3000]", ""));
+		return toZenkakuKatakana(new String(chars).replaceAll("[\\s\u3000]", ""));
 	}
 
 	/**
@@ -299,13 +299,13 @@ public final class StringUtils {
 
 	/**
 	 * 文字列の64ビットハッシュ値を計算します。
-	 * 内部で名前の正規化（normalizeName）を行ってからハッシュを生成します。
+	 * 内部で名前の正規化（normalize）を行ってからハッシュを生成します。
 	 * 
 	 * @param str 対象文字列
 	 * @return 64ビットのハッシュ値
 	 */
 	public static synchronized long hash(final String str) {
-		final String normalized = StringUtils.normalizeName(str);
+		final String normalized = StringUtils.normalize(str);
 		try {
 			final byte[] b = normalized.getBytes("UTF-8");
 			CRC.reset();
@@ -338,7 +338,7 @@ public final class StringUtils {
 	 * @param c 変換前の文字
 	 * @return 変換後の文字
 	 */
-	public static char hankakuKatakanaToZenkakuKatakana(final char c) {
+	public static char toZenkakuKatakana(final char c) {
 		if (c >= HANKAKU_KATAKANA_FIRST_CHAR && c <= HANKAKU_KATAKANA_LAST_CHAR) {
 			return ZENKAKU_KATAKANA[c - HANKAKU_KATAKANA_FIRST_CHAR];
 		} else {
@@ -354,7 +354,7 @@ public final class StringUtils {
 	 * @param c2 変換前の2文字目
 	 * @return 変換後の文字
 	 */
-	public static char mergeChar(final char c1, final char c2) {
+	public static char mergeKatakana(final char c1, final char c2) {
 		if (c2 == '\uFF9E') {
 			final int i = "\uFF76\uFF77\uFF78\uFF79\uFF7A\uFF7B\uFF7C\uFF7D\uFF7E\uFF7F\uFF80\uFF81\uFF82\uFF83\uFF84\uFF8A\uFF8B\uFF8C\uFF8D\uFF8E\uFF73".indexOf(c1);
 			if (i >= 0) {
@@ -376,7 +376,7 @@ public final class StringUtils {
 	 * @param s 変換前文字列
 	 * @return 変換後文字列
 	 */
-	public static String hankakuKatakanaToZenkakuKatakana(final String s) {
+	public static String toZenkakuKatakana(final String s) {
 		if (s == null) {
 			return null;
 		}
@@ -385,14 +385,14 @@ public final class StringUtils {
 			final char c = s.charAt(i);
 			if (i < s.length() - 1) {
 				final char c2 = s.charAt(i + 1);
-				final char m = mergeChar(c, c2);
+				final char m = mergeKatakana(c, c2);
 				if (m != c) {
 					sb.append(m);
 					i++;
 					continue;
 				}
 			}
-			sb.append(hankakuKatakanaToZenkakuKatakana(c));
+			sb.append(toZenkakuKatakana(c));
 		}
 		return sb.toString();
 	}
@@ -401,14 +401,14 @@ public final class StringUtils {
 	 * 文字列をスペース区切りのN-gram（バイグラム）形式に変換します。
 	 * 括弧内の処理など、特殊な正規化ルールが含まれます。
 	 * 
-	 * @param nstr 対象文字列
+	 * @param str 対象文字列
 	 * @return スペース区切りの文字列
 	 */
-	public static String ngramName(final String nstr) {
+	public static String toNgram(final String str) {
 		int state = 0;
 		final StringBuffer buff = new StringBuffer();
-		for (int j = 0; j < nstr.length(); ++j) {
-			final char d = nstr.charAt(j);
+		for (int j = 0; j < str.length(); ++j) {
+			final char d = str.charAt(j);
 			switch (state) {
 			case 0:
 				if (d == '（') {
@@ -424,32 +424,32 @@ public final class StringUtils {
 			case 2:
 				state = 0;
 				if (d == '）') {
-					buff.append(nstr.subSequence(j - 2, j));
+					buff.append(str.subSequence(j - 2, j));
 				} else {
-					buff.append(nstr.charAt(j - 2));
+					buff.append(str.charAt(j - 2));
 					buff.append(' ');
-					buff.append(nstr.charAt(j - 1));
+					buff.append(str.charAt(j - 1));
 					buff.append(' ');
 				}
 				break;
 			}
 
 			buff.append(d);
-			if (j < nstr.length() - 1) {
+			if (j < str.length() - 1) {
 				buff.append(' ');
-				if (nstr.charAt(j + 1) == '　') {
+				if (str.charAt(j + 1) == '　') {
 					++j;
 				}
 			}
 		}
 		switch (state) {
 		case 1:
-			buff.append(nstr.charAt(nstr.length() - 1));
+			buff.append(str.charAt(str.length() - 1));
 			break;
 		case 2:
-			buff.append(nstr.charAt(nstr.length() - 2));
+			buff.append(str.charAt(str.length() - 2));
 			buff.append(' ');
-			buff.append(nstr.charAt(nstr.length() - 1));
+			buff.append(str.charAt(str.length() - 1));
 			break;
 		}
 		return buff.toString();

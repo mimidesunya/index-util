@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 public class StringUtilsTest {
 
     @Test
-    public void testConvert() {
-        assertEquals("ABCabc012!#$", StringUtils.convert("ＡＢＣａｂｃ０１２！＃＄"));
-        assertEquals("Hello World", StringUtils.convert("Hello World"));
+    public void testToHalfWidth() {
+        assertEquals("ABCabc012!#$", StringUtils.toHalfWidth("ＡＢＣａｂｃ０１２！＃＄"));
+        assertEquals("Hello World", StringUtils.toHalfWidth("Hello World"));
     }
 
     @Test
@@ -27,13 +27,13 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void testNormalizeName() {
+    public void testNormalize() {
         // ひらがな -> カタカナ, 異体字統一, 半角カタカナ -> 全角カタカナ, スペース除去
-        String n1 = StringUtils.normalizeName("坂﨑 ともゑ");
+        String n1 = StringUtils.normalize("坂﨑 ともゑ");
         assertEquals("坂崎トモエ", n1);
-        String n2 = StringUtils.normalizeName("坂﨑 ﾏﾛｶ");
+        String n2 = StringUtils.normalize("坂﨑 ﾏﾛｶ");
         assertEquals("坂崎マロカ", n2);
-        assertEquals("前島", StringUtils.normalizeName("前島"));
+        assertEquals("前島", StringUtils.normalize("前島"));
     }
 
     @Test
@@ -69,18 +69,18 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void testHankakuKatakanaToZenkakuKatakana() {
-        String result = StringUtils.hankakuKatakanaToZenkakuKatakana("\uFF71\uFF72\uFF73\uFF74\uFF75");
+    public void testToZenkakuKatakana() {
+        String result = StringUtils.toZenkakuKatakana("\uFF71\uFF72\uFF73\uFF74\uFF75");
         assertEquals("アイウエオ", result);
-        assertEquals("ガギグゲゴ", StringUtils.hankakuKatakanaToZenkakuKatakana("\uFF76\uFF9E\uFF77\uFF9E\uFF78\uFF9E\uFF79\uFF9E\uFF7A\uFF9E"));
-        assertEquals("パピプペポ", StringUtils.hankakuKatakanaToZenkakuKatakana("\uFF8A\uFF9F\uFF8B\uFF9F\uFF8C\uFF9F\uFF8D\uFF9F\uFF8E\uFF9F"));
+        assertEquals("ガギグゲゴ", StringUtils.toZenkakuKatakana("\uFF76\uFF9E\uFF77\uFF9E\uFF78\uFF9E\uFF79\uFF9E\uFF7A\uFF9E"));
+        assertEquals("パピプペポ", StringUtils.toZenkakuKatakana("\uFF8A\uFF9F\uFF8B\uFF9F\uFF8C\uFF9F\uFF8D\uFF9F\uFF8E\uFF9F"));
     }
 
     @Test
-    public void testNgramName() {
-        String ng1 = StringUtils.ngramName("あいう");
+    public void testToNgram() {
+        String ng1 = StringUtils.toNgram("あいう");
         assertEquals("あ い う", ng1);
-        String ng2 = StringUtils.ngramName("（あい）");
+        String ng2 = StringUtils.toNgram("（あい）");
         assertEquals("（ あ い ）", ng2);
     }
 }
