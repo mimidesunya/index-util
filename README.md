@@ -39,11 +39,11 @@ Gradle を使用してビルドします。
 ./gradlew build
 ```
 
-ビルドが成功すると、以下の成果物が `public` ディレクトリに出力されます。
+ビルドが成功すると、以下の成果物が `publish` ディレクトリに出力されます。
 
-- `public/libs`: JAR ファイル
-- `public/javadoc`: API ドキュメント
-- `public/php-lib`: PHP ライブラリ
+- `publish/libs`: JAR ファイル
+- `publish/javadoc`: API ドキュメント
+- `publish/php-lib`: PHP ライブラリ
 
 ※ PHP環境（`php`, `composer` コマンド）が利用可能な場合、ビルド時にPHPのテストも実行されます。
 
@@ -51,24 +51,24 @@ Gradle を使用してビルドします。
 
 GitHub 上のファイルおよびプレビュー表示へのリンクです。
 
-- **[API ドキュメント (Javadoc)](https://raw.githack.com/mimidesunya/index-util/main/public/javadoc/index.html)** （ブラウザで表示）
-- **[最新の JAR ファイル (ダウンロード)](https://raw.githack.com/mimidesunya/index-util/main/public/libs/index-util-1.0-SNAPSHOT.jar)**
-- **[PHP ライブラリ](https://raw.githack.com/mimidesunya/index-util/main/public/php-lib/src/StringUtils.php)** (ソースコード)
+- **[API ドキュメント (Javadoc)](https://raw.githack.com/mimidesunya/index-util/main/publish/javadoc/index.html)** （ブラウザで表示）
+- **[最新の JAR ファイル (ダウンロード)](https://raw.githack.com/mimidesunya/index-util/main/publish/libs/index-util-1.0-SNAPSHOT.jar)**
+- **[PHP ライブラリ](https://raw.githack.com/mimidesunya/index-util/main/publish/php-lib/src/StringUtils.php)** (ソースコード)
 
 
-## 公開ディレクトリ (`public/`)
+## 公開ディレクトリ (`publish/`)
 
 このプロジェクトでは、Git 管理および公開用に以下のディレクトリに成果物を集約しています。
 
-- `public/libs/`: ビルド済みの JAR ファイル
-- `public/javadoc/`: 生成された API ドキュメント (HTML)
-- `public/php-lib/`: 生成された PHP ライブラリ
+- `publish/libs/`: ビルド済みの JAR ファイル
+- `publish/javadoc/`: 生成された API ドキュメント (HTML)
+- `publish/php-lib/`: 生成された PHP ライブラリ
   - `src/StringUtils.php`: 辞書データが埋め込まれたスタンドアロンで利用可能な PHP ファイル
   - `composer.json`: Composer 用設定ファイル
 
 ## PHP ライブラリの利用方法
 
-生成された `public/php-lib/src/StringUtils.php` は、`mbstring` 拡張モジュールが有効な PHP 環境であれば単独で動作します。
+生成された `publish/php-lib/src/StringUtils.php` は、`mbstring` 拡張モジュールが有効な PHP 環境であれば単独で動作します。
 
 ```php
 require_once 'path/to/StringUtils.php';

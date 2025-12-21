@@ -55,7 +55,7 @@ task publishToPublic(type: Copy) {
         into 'javadoc'
     }
     
-    into 'public'
+    into 'publish'
 }
 
 // jar と javadoc タスクが完了した後に自動的に実行されるように設定
@@ -81,6 +81,18 @@ task testPhp(type: Exec) {
         commandLine 'cmd', '/c', phpUnitPath
     } else {
         commandLine phpUnitPath
+    }
+
+    // PHPコマンドが利用可能な場合のみ実行
+    onlyIf {
+        try {
+            def checkCmd = isWindows ? ['cmd', '/c', 'php -v'] : ['php', '-v']
+            def process = new ProcessBuilder(checkCmd).start()
+            process.waitFor()
+            return process.exitValue() == 0
+        } catch (Exception e) {
+            return false
+        }
     }
 }
 
@@ -156,7 +168,7 @@ task copyPhpLib(type: Copy) {
         include 'src/StringUtils.php'
     }
     
-    into 'public/php-lib'
+    into 'publish/php-lib'
 }
 
 publishToPublic.dependsOn copyPhpLib
