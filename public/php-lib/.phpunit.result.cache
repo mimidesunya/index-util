@@ -1,1 +1,0 @@
-{"version":1,"defects":[],"times":{"StringUtilsTest::testToHalfWidth":0.002,"StringUtilsTest::testTrimToEmpty":0,"StringUtilsTest::testFullTrim":0,"StringUtilsTest::testNormalize":0.001,"StringUtilsTest::testConvertKansuji":0,"StringUtilsTest::testToKanji":0,"StringUtilsTest::testHash":0,"StringUtilsTest::testToZenkakuKatakana":0,"StringUtilsTest::testToNgram":0}}
