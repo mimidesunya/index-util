@@ -61,3 +61,103 @@ task publishToPublic(type: Copy) {
 // jar と javadoc タスクが完了した後に自動的に実行されるように設定
 jar.finalizedBy publishToPublic
 javadoc.finalizedBy publishToPublic
+
+task testPhp(type: Exec) {
+    workingDir 'php-lib'
+    
+    // OSに応じたコマンド設定
+    def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
+    def phpUnitPath = isWindows ? 'vendor\\bin\\phpunit' : './vendor/bin/phpunit'
+    
+    // 実行ファイルの存在確認
+    doFirst {
+        def phpUnitFile = file("php-lib/${isWindows ? 'vendor/bin/phpunit.bat' : 'vendor/bin/phpunit'}")
+        if (!phpUnitFile.exists()) {
+            throw new GradleException("PHPUnit not found. Please run 'composer install' in php-lib directory.")
+        }
+    }
+
+    if (isWindows) {
+        commandLine 'cmd', '/c', phpUnitPath
+    } else {
+        commandLine phpUnitPath
+    }
+}
+
+// PHP環境が整っていない場合はテストをスキップする（ビルドを失敗させない）ように変更する場合は以下のようにします
+// onlyIf { file("php-lib/vendor/bin/phpunit").exists() || file("php-lib/vendor/bin/phpunit.bat").exists() }
+
+check.dependsOn testPhp
+
+task generatePhpSource {
+    def outputDir = file("$buildDir/generated/php/src")
+    def varFile = file('src/main/resources/net/zamasoft/index/util/var.txt')
+    def phpFile = file('php-lib/src/StringUtils.php')
+    
+    inputs.file varFile
+    inputs.file phpFile
+    outputs.dir outputDir
+    
+    doLast {
+        outputDir.mkdirs()
+        
+        // var.txt からマップを生成
+        def mapBuilder = new StringBuilder()
+        mapBuilder.append('    /** 異体字などの変換マップ */\n')
+        mapBuilder.append('    private static $VAR_MAP = [\n')
+        
+        varFile.eachLine('UTF-8') { line ->
+            if (line.length() >= 2) {
+                int[] codePoints = line.codePoints().toArray()
+                if (codePoints.length >= 2) {
+                    String toStr = new String(codePoints, 0, 1)
+                    toStr = toStr.replace("\\", "\\\\").replace("'", "\\'")
+                    
+                    for (int i = 1; i < codePoints.length; i++) {
+                        String fromStr = new String(codePoints, i, 1)
+                        fromStr = fromStr.replace("\\", "\\\\").replace("'", "\\'")
+                        mapBuilder.append("        '${fromStr}' => '${toStr}',\n")
+                    }
+                }
+            }
+        }
+        mapBuilder.append("    ];\n\n")
+        mapBuilder.append("    private static function loadVarMap(): void\n")
+        mapBuilder.append("    {\n")
+        mapBuilder.append("        // ビルド時にマップが埋め込まれているため何もしない\n")
+        mapBuilder.append("    }\n")
+        
+        String content = phpFile.getText('UTF-8')
+        
+        // 置換対象: $VAR_MAP の定義から loadVarMap メソッドの終わりまで
+        // 次のメソッド (normalize) のJavadoc開始を目印にする
+        
+        def regex = '(?s)/\\*\\* 異体字などの変換マップ \\*/.*?private static \\$VAR_MAP = null;.*?(?=/\\*\\*[\\r\\n]+\\s+\\*\\s+ひらがなをカタカナに変換し)'
+        
+        def newContent = content.replaceAll(regex) { 
+            return mapBuilder.toString()
+        }
+        
+        new File(outputDir, 'StringUtils.php').setText(newContent, 'UTF-8')
+    }
+}
+
+task copyPhpLib(type: Copy) {
+    dependsOn generatePhpSource
+    
+    from('php-lib') {
+        exclude 'src/StringUtils.php'
+        exclude 'tests'
+        exclude 'vendor'
+        exclude 'phpunit.xml'
+        exclude 'src/resources' // リソースフォルダも不要
+    }
+    from("$buildDir/generated/php") {
+        include 'src/StringUtils.php'
+    }
+    
+    into 'public/php-lib'
+}
+
+publishToPublic.dependsOn copyPhpLib
+
