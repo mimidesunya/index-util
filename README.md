@@ -24,9 +24,12 @@ Java 1.8 (Java 8) 互換でビルドされており、レガシーな環境で�
 - **全角カタカナ変換 (`toZenkakuKatakana`)**:
   - 半角カタカナを全角カタカナに変換（濁点合成対応）
 
+また、同等の機能を持つ **PHP ライブラリ** も自動生成されます。
+
 ## 動作環境
 
-- Java 1.8 以上
+- **Java**: Java 1.8 以上
+- **PHP** (オプション): PHP 7.4 以上、Composer（PHP版のテストおよびビルドに必要）
 
 ## ビルド方法
 
@@ -36,14 +39,22 @@ Gradle を使用してビルドします。
 ./gradlew build
 ```
 
-ビルドが成功すると、`public/libs` に JAR ファイルが、`public/javadoc` に API ドキュメントが自動的に出力されます。
+ビルドが成功すると、以下の成果物が `public` ディレクトリに出力されます。
+
+- `public/libs`: JAR ファイル
+- `public/javadoc`: API ドキュメント
+- `public/php-lib`: PHP ライブラリ
+
+※ PHP環境（`php`, `composer` コマンド）が利用可能な場合、ビルド時にPHPのテストも実行されます。
 
 ## 公開リソース
 
 GitHub 上のファイルおよびプレビュー表示へのリンクです。
 
 - **[API ドキュメント (Javadoc)](https://raw.githack.com/mimidesunya/index-util/main/public/javadoc/index.html)** （ブラウザで表示）
-- **[最新の JAR ファイル (ダウンロード)](https://github.com/mimidesunya/index-util/raw/main/public/libs/index-util-1.0-SNAPSHOT.jar)**
+- **[最新の JAR ファイル (ダウンロード)](https://raw.githack.com/mimidesunya/index-util/main/public/libs/index-util-1.0-SNAPSHOT.jar)**
+- **[PHP ライブラリ](https://raw.githack.com/mimidesunya/index-util/main/public/php-lib/src/StringUtils.php)** (ソースコード)
+
 
 ## 公開ディレクトリ (`public/`)
 
@@ -51,7 +62,23 @@ GitHub 上のファイルおよびプレビュー表示へのリンクです。
 
 - `public/libs/`: ビルド済みの JAR ファイル
 - `public/javadoc/`: 生成された API ドキュメント (HTML)
+- `public/php-lib/`: 生成された PHP ライブラリ
+  - `src/StringUtils.php`: 辞書データが埋め込まれたスタンドアロンで利用可能な PHP ファイル
+  - `composer.json`: Composer 用設定ファイル
+
+## PHP ライブラリの利用方法
+
+生成された `public/php-lib/src/StringUtils.php` は、`mbstring` 拡張モジュールが有効な PHP 環境であれば単独で動作します。
+
+```php
+require_once 'path/to/StringUtils.php';
+use Zamasoft\Index\Util\StringUtils;
+
+$normalized = StringUtils::normalize("文字列");
+```
+
 
 ## ライセンス
 
-このプロジェクトのライセンスについては、別途お問い合わせください。
+このプロジェクトは [CC0 1.0 Universal (CC0 1.0) Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/) の下で公開されています。
+
