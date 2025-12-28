@@ -26,6 +26,47 @@ Java 1.8 (Java 8) 互換でビルドされており、レガシーな環境で�
 
 また、同等の機能を持つ **PHP ライブラリ** も自動生成されます。
 
+## インストール
+
+### Java (Gradle)
+
+[JitPack](https://jitpack.io/) を使用してインストールします。
+
+`build.gradle` に以下を追加してください。
+
+```gradle
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.mimidesunya:index-util:Tag'
+}
+```
+
+※ `Tag` には [Releases](https://github.com/mimidesunya/index-util/releases) のバージョン（例: `v1.0.0`）を指定してください。
+
+### PHP (Composer)
+
+`composer.json` に以下を追加してください。
+
+```json
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mimidesunya/index-util"
+        }
+    ],
+    "require": {
+        "zamasoft/index-util": "dev-php"
+    }
+}
+```
+
+その後、`composer update` を実行します。
+
 ## 動作環境
 
 - **Java**: Java 1.8 以上
