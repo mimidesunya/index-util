@@ -33,3 +33,5 @@ gradle/wrapper/gradle-wrapper.properties
 php-lib/composer.lock
 php-lib/vendor/
 php-lib/.phpunit.result.cache
+
+PUBLISHING_MEMO.md
