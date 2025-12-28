@@ -43,25 +43,6 @@ jar {
     }
 }
 
-task publishToPublic(type: Copy) {
-    dependsOn jar, javadoc
-    
-    // JARファイルをコピー
-    from(jar.archiveFile) {
-        into 'libs'
-    }
-    
-    // Javadocをコピー
-    from(javadoc.destinationDir) {
-        into 'javadoc'
-    }
-    
-    into 'publish'
-}
-
-// jar と javadoc タスクが完了した後に自動的に実行されるように設定
-jar.finalizedBy publishToPublic
-javadoc.finalizedBy publishToPublic
 
 task testPhp(type: Exec) {
     workingDir 'php-lib'
@@ -169,10 +150,9 @@ task copyPhpLib(type: Copy) {
         include 'src/StringUtils.php'
     }
     
-    into 'publish/php-lib'
+    into "$buildDir/php-lib"
 }
 
-publishToPublic.dependsOn copyPhpLib
 
 publishing {
     publications {

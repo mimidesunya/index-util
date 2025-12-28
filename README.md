@@ -80,36 +80,19 @@ Gradle を使用してビルドします。
 ./gradlew build
 ```
 
-ビルドが成功すると、以下の成果物が `publish` ディレクトリに出力されます。
-
-- `publish/libs`: JAR ファイル
-- `publish/javadoc`: API ドキュメント
-- `publish/php-lib`: PHP ライブラリ
+ビルドが成功すると、`build` ディレクトリ以下に成果物が出力されます。
 
 ※ PHP環境（`php`, `composer` コマンド）が利用可能な場合、ビルド時にPHPのテストも実行されます。
 
 ## 公開リソース
 
-GitHub 上のファイルおよびプレビュー表示へのリンクです。
-
-- **[API ドキュメント (Javadoc)](https://raw.githack.com/mimidesunya/index-util/main/publish/javadoc/index.html)** （ブラウザで表示）
-- **[最新の JAR ファイル (ダウンロード)](https://raw.githack.com/mimidesunya/index-util/main/publish/libs/index-util-1.0-SNAPSHOT.jar)**
-- **[PHP ライブラリ](https://raw.githack.com/mimidesunya/index-util/main/publish/php-lib/src/StringUtils.php)** (ソースコード)
-
-
-## 公開ディレクトリ (`publish/`)
-
-このプロジェクトでは、Git 管理および公開用に以下のディレクトリに成果物を集約しています。
-
-- `publish/libs/`: ビルド済みの JAR ファイル
-- `publish/javadoc/`: 生成された API ドキュメント (HTML)
-- `publish/php-lib/`: 生成された PHP ライブラリ
-  - `src/StringUtils.php`: 辞書データが埋め込まれたスタンドアロンで利用可能な PHP ファイル
-  - `composer.json`: Composer 用設定ファイル
+- **[API ドキュメント (Javadoc)](https://mimidesunya.github.io/index-util/)**
+- **[PHP ライブラリ (ソースコード)](https://github.com/mimidesunya/index-util/blob/php/src/StringUtils.php)**
 
 ## PHP ライブラリの利用方法
 
-生成された `publish/php-lib/src/StringUtils.php` は、`mbstring` 拡張モジュールが有効な PHP 環境であれば単独で動作します。
+Composer を使用しない場合でも、生成された `StringUtils.php` は `mbstring` 拡張モジュールが有効な PHP 環境であれば単独で動作します。
+[PHP ライブラリ (ソースコード)](https://github.com/mimidesunya/index-util/blob/php/src/StringUtils.php) からダウンロードして利用してください。
 
 ```php
 require_once 'path/to/StringUtils.php';
@@ -117,6 +100,7 @@ use Zamasoft\Index\Util\StringUtils;
 
 $normalized = StringUtils::normalize("文字列");
 ```
+
 
 
 ## ライセンス
