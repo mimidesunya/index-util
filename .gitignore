@@ -33,3 +33,6 @@ php-lib/vendor/
 php-lib/.phpunit.result.cache
 
 PUBLISHING_MEMO.md
+
+# Generated resources
+src/main/resources/net/zamasoft/index/util/var.txt

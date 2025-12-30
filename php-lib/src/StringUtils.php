@@ -106,7 +106,6 @@ final class StringUtils
 
     /** 異体字などの変換マップ */
     private static $VAR_MAP = null;
-
     private static function loadVarMap(): void
     {
         if (self::$VAR_MAP !== null) {
@@ -114,8 +113,8 @@ final class StringUtils
         }
 
         self::$VAR_MAP = [];
-        // Javaプロジェクトのリソースファイルを直接参照する
-        $resourcePath = __DIR__ . '/../../src/main/resources/net/zamasoft/index/util/var.txt';
+        // パッケージ内のリソースファイルを参照する
+        $resourcePath = __DIR__ . '/../resources/var.txt';
         
         if (!file_exists($resourcePath)) {
             throw new RuntimeException("Resource 'var.txt' not found at $resourcePath");

@@ -1,9 +1,9 @@
 <?php
 
+namespace Zamasoft\Index\Util\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Zamasoft\Index\Util\StringUtils;
-
-require_once __DIR__ . '/../src/StringUtils.php';
 
 class StringUtilsTest extends TestCase
 {
