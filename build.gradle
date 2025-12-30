@@ -77,6 +77,13 @@ task testPhp(type: Exec) {
 
 check.dependsOn testPhp
 
+// PHPライブラリをビルドディレクトリにコピーするタスク
+task copyPhpLib(type: Copy) {
+    from 'php-lib'
+    into layout.buildDirectory.dir('php-lib')
+    exclude 'vendor'
+}
+
 // var.txtをphp-libからJavaのリソースディレクトリにコピーするタスク
 task copyVarTxtToResources(type: Copy) {
     from 'php-lib/resources/var.txt'
